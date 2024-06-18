@@ -1,10 +1,8 @@
 import os
-import sys
 import json
 import datetime
 
-#from enums import Priority, Size
-from ..helpers.file_handler import JsonFile
+from file_handler import JsonFile
 
 TODO_PATH = os.path.join('data', 'todo_list.json')
 CURRENT_DATE = str(datetime.date.today())

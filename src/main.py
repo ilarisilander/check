@@ -1,5 +1,5 @@
 """ Test module """
-from data.task import Create
+from task import Create
 
 
 if __name__ == '__main__':
