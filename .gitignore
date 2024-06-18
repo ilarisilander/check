@@ -1,2 +1,2 @@
-/cli_app_venv/
-*__pycache__
+cli_app_venv/
+__pycache__/
