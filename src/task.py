@@ -72,9 +72,26 @@ class Update:
 
 
 class Delete:
-    def __init__(self) -> None:
-        pass
 
+    
+    def task(self, id: str) -> None:
+        """ Delete a specific task from the todo list
+        
+        Task is based on the task ID
+        """
+        todo_dict = JsonFile.read(TODO_PATH)
+        new_todo_dict = self._delete_task_from_todo(id, todo_dict)
+        JsonFile.write(TODO_PATH, new_todo_dict)
+
+    @staticmethod
+    def _delete_task_from_todo(id: str, todo: dict) -> dict:
+        if id in todo['todo']:
+            todo['todo'].pop(id, None)
+            print(f'Task with ID: {id} was removed from the list')
+        else:
+            print(f'{id} not in todo list')
+        # TODO: Iterate through all levels to look for the ID
+        return todo
 
 
 if __name__ == '__main__':

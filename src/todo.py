@@ -1,7 +1,7 @@
 import click
 
 from rich.console import Console
-from task import Create
+from task import Create, Delete
 
 
 console = Console()
@@ -11,9 +11,13 @@ def task():
     pass
 
 @click.command()
-@click.option('--id', prompt=True)
-def done(id: int):
-    click.echo(f'Task {id} moved to done')
+@click.option('--id', required=True)
+def delete(id: str):
+    delete = Delete()
+    try:
+        delete.task(id)
+    except Exception as e:
+        click.echo(e)
 
 @click.command()
 @click.option('--title', required=True, help='Title of the task')
@@ -35,7 +39,7 @@ def new(title: str, description: str, priority: str, size: str, deadline: str):
         click.echo(e)
     click.echo(f'Task added to the todo list')
 
-task.add_command(done)
+task.add_command(delete)
 task.add_command(new)
 
 if __name__ == '__main__':
