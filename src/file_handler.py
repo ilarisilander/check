@@ -16,4 +16,7 @@ class JsonFile:
     def write(file_path: str, new_data: dict) -> None:
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(new_data, file, indent=4)
-    
+
+    def get_all_tasks(todo: dict) -> dict:
+        todo.pop('id_count')
+        return todo
