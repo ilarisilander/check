@@ -1,14 +1,35 @@
 {
     "priority": {
-        "range": ["low", "medium", "high", "critical"]
+        "colors": {
+            "low": "green",
+            "medium": "yellow",
+            "high": "orange",
+            "critical": "red"
+        }
     },
     "size": {
-        "range": ["small", "medium", "large"]
+        "colors": {
+            "small": "green",
+            "medium": "yellow",
+            "large": "red"
+        }
     },
     "deadline": {
+        "colors": {
+            "critical": "red",
+            "urgent": "yellow",
+            "healthy": "green",
+            "None": "green"
+        },
         "warning": {
-            "red": 0.2,
-            "yellow": 0.4
+            "critical": 0.2,
+            "urgent": 0.4
+        }
+    },
+    "is_done": {
+        "colors": {
+            "yes": "green",
+            "no": "red"
         }
     }
 }

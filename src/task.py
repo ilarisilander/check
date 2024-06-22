@@ -5,7 +5,6 @@ import json
 
 from constants import TODO_PATH, CURRENT_DATE
 from rich.console import Console
-from rich.table import Table
 from file_handler import JsonFile
 from view import Display
 
@@ -43,7 +42,7 @@ class Create:
             'size': self.size,
             'create_date': CURRENT_DATE,
             'done_date': None,
-            'is_done': False,
+            'is_done': "no",
             'deadline': self.deadline
         }
         todo['id_count'] = task_id
@@ -80,8 +79,10 @@ class Read:
             self._done_tasks()
 
     def _all_tasks(self):
-        pass
-    
+        self.display.tasks('todo')
+        self.display.tasks('in_progress')
+        self.display.tasks('done')
+
     def _in_progress_tasks(self):
         self.display.tasks('in_progress')
 
