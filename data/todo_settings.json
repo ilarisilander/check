@@ -19,7 +19,7 @@
             "critical": "red",
             "urgent": "yellow",
             "healthy": "green",
-            "None": "green"
+            "None": "white"
         },
         "warning": {
             "critical": 0.2,

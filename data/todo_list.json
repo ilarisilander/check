@@ -1,27 +1,6 @@
 {
-    "id_count": 2,
-    "todo": {
-        "1": {
-            "title": "Go to the gym",
-            "description": "Legs and some light bench",
-            "priority": "critical",
-            "size": "medium",
-            "create_date": "2024-06-22",
-            "done_date": null,
-            "is_done": "no",
-            "deadline": "None"
-        },
-        "2": {
-            "title": "Test",
-            "description": "Description",
-            "priority": "critical",
-            "size": "medium",
-            "create_date": "2024-06-22",
-            "done_date": null,
-            "is_done": "no",
-            "deadline": "None"
-        }
-    },
+    "id_count": 0,
+    "todo": {},
     "in_progress": {},
     "done": {}
 }

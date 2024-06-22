@@ -6,17 +6,17 @@ MOBILITY
 
 FEATURES
 ########
--   Add task to todo list
--   Remove task from todo list
+-   Add task to todo list [done]
+-   Remove task from todo list [done]
     -   Remove all tasks from todo list (if there's several and you want to just wipe them all)
--   Display all tasks
--   Completed:
+-   Display all tasks [done]
+-   Completed: [done]
     -   Green text or checkbox to indicate that a task is completed
     -   Red text or checkbox to indicate that a task is NOT completed
--   Time for when the task was created
--   Time for when the task was completed
--   Priority -> high, medium, low
--   Task size -> big, medium, small -> default = small
+-   Time for when the task was created [done]
+-   Time for when the task was completed [done]
+-   Priority -> high, medium, low [done]
+-   Task size -> big, medium, small -> default = small [done]
 -   Due dates to display what the deadline is for certain tasks
 -   Sorting:
     -   Task name

@@ -3,10 +3,10 @@
 import os
 import json
 
-from constants import TODO_PATH, CURRENT_DATE
+from src.constants import TODO_PATH, CURRENT_DATE
 from rich.console import Console
-from file_handler import JsonFile
-from view import Display
+from src.file_handler import JsonFile
+from src.view import Display
 
 
 class Create:
@@ -93,12 +93,38 @@ class Read:
         self.display.tasks('done')
 
 class Update:
-    def __init__(self) -> None:
-        pass
+    def start_task(task_id: str):
+        todo_dict = JsonFile.read(TODO_PATH)
+        if task_id in todo_dict['todo']:
+            todo_dict['in_progress'][task_id] = todo_dict['todo'][task_id]
+            todo_dict['todo'].pop(task_id)
+            JsonFile.write(TODO_PATH, todo_dict)
+            print(f'Task with ID: {task_id} was moved to "in progress"')
+        else:
+            print(f'There is no task with ID: {task_id} in "todo"')
+
+    def end_task(task_id: str):
+        # TODO: Refactor this to reuse code
+        todo_dict = JsonFile.read(TODO_PATH)
+        if task_id in todo_dict['todo']:
+            todo_dict['done'][task_id] = todo_dict['todo'][task_id]
+            todo_dict['done'][task_id]['done_date'] = CURRENT_DATE
+            todo_dict['done'][task_id]['is_done'] = "Yes"
+            todo_dict['todo'].pop(task_id)
+            JsonFile.write(TODO_PATH, todo_dict)
+            print(f'Task with ID: {task_id} was moved to "done"')
+        elif task_id in todo_dict['in_progress']:
+            todo_dict['done'][task_id] = todo_dict['in_progress'][task_id]
+            todo_dict['done'][task_id]['done_date'] = CURRENT_DATE
+            todo_dict['done'][task_id]['is_done'] = "yes"
+            todo_dict['in_progress'].pop(task_id)
+            JsonFile.write(TODO_PATH, todo_dict)
+            print(f'Task with ID: {task_id} was moved to "done"')
+        else:
+            print(f'There is no task with ID: {task_id} in "todo"')
 
 
 class Delete:
-
     def task(self, id: str) -> None:
         """ Delete a specific task from the todo list
         
