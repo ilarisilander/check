@@ -15,7 +15,7 @@ def task():
 @click.option('--todo', 'flags', flag_value='todo', multiple=True, is_flag=True, default=[], help='List all tasks from "todo"')
 @click.option('--in-progress', 'flags', flag_value='in_progress', multiple=True, is_flag=True, default=[], help='List all tasks from "in progress"')
 @click.option('--done', 'flags', flag_value='done', multiple=True, is_flag=True, default=[], help='List all tasks from "done"')
-def list(flags):
+def list(flags: tuple):
     if len(flags) > 1 or len(flags) == 0:
         raise click.UsageError('Options --all, --todo, --in-progress, and --done are mutually exclusive. Choose one.')
     else:
@@ -41,17 +41,11 @@ def delete(id: str):
 @click.command()
 @click.option('--title', required=True, help='Title of the task')
 @click.option('--description', required=True, help='Description of the task')
-@click.option('--priority', help='Task priority: low, medium, high, critical')
-@click.option('--size', help='Task size: small, medium, large')
-@click.option('--deadline', help='Deadline of the task')
+@click.option('--priority', default='medium', help='Task priority: low, medium, high, critical')
+@click.option('--size', default='medium', help='Task size: small, medium, large')
+@click.option('--deadline', default='None', help='Deadline of the task')
 def add(title: str, description: str, priority: str, size: str, deadline: str):
-    create = Create(
-        title,
-        description,
-        priority='medium',
-        size='medium',
-        deadline=None
-    )
+    create = Create(title, description, priority, size, deadline)
     try:
         create.new_task()
     except Exception as e:

@@ -1,0 +1,14 @@
+{
+    "priority": {
+        "range": ["low", "medium", "high", "critical"]
+    },
+    "size": {
+        "range": ["small", "medium", "large"]
+    },
+    "deadline": {
+        "warning": {
+            "red": 0.2,
+            "yellow": 0.4
+        }
+    }
+}

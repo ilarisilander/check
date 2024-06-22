@@ -1,13 +1,13 @@
+""" Module to handle all the tasks (create, read, update, delete) """
+
 import os
 import json
-import datetime
 
+from constants import TODO_PATH, CURRENT_DATE
 from rich.console import Console
 from rich.table import Table
 from file_handler import JsonFile
-
-TODO_PATH = os.path.join('data', 'todo_list.json')
-CURRENT_DATE = str(datetime.date.today())
+from view import Display
 
 
 class Create:
@@ -64,8 +64,10 @@ class Create:
 
 
 class Read:
+    """ Class to handle the reading of the tasks """
     def __init__(self) -> None:
         self.console = Console()
+        self.display = Display()
 
     def tasks(self, flag: str) -> None:
         if flag == 'all':
@@ -80,43 +82,14 @@ class Read:
     def _all_tasks(self):
         pass
     
-    def _in_progress_tasks():
-        table = Table(title='Tasks in progree')
-        pass
+    def _in_progress_tasks(self):
+        self.display.tasks('in_progress')
 
     def _todo_tasks(self):
-        todo_dict = JsonFile.read(TODO_PATH)
-        task_dict = JsonFile.get_all_tasks(todo_dict)
+        self.display.tasks('todo')
 
-        table = Table(title='Tasks in todo')
-        table.add_column("ID", style="cyan", justify="center")
-        table.add_column("Title", style="cyan", justify="center")
-        table.add_column("Description", style="magenta", justify="center")
-        table.add_column("Priority", style="yellow", justify="right")
-        table.add_column("Size", style="green", justify="right")
-        table.add_column("Deadline", style="blue", justify="center")
-        table.add_column("Create Date", style="blue", justify="center")
-        table.add_column("Done Date", style="blue", justify="center")
-        table.add_column("Done", style="blue", justify="center")
-
-        for task, info in task_dict['todo'].items():
-            table.add_row(
-                task,
-                info['title'],
-                info['description'],
-                str(info['priority']),
-                str(info['size']),
-                str(info['deadline']),
-                str(info['create_date']),
-                str(info['done_date']),
-                str(info['is_done']),
-            )
-
-        self.console.print(table)
-
-    def _done_tasks():
-        table = Table(title='Tasks in done')
-        pass
+    def _done_tasks(self):
+        self.display.tasks('done')
 
 class Update:
     def __init__(self) -> None:
@@ -125,7 +98,6 @@ class Update:
 
 class Delete:
 
-    
     def task(self, id: str) -> None:
         """ Delete a specific task from the todo list
         
