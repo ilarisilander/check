@@ -2,13 +2,17 @@ import click
 
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
+from src.setup_data import Files
 
 console = Console()
 
 
 @click.group()
 def check():
-    pass
+    files = Files()
+    files.ensure_appdata_dir()
+    files.ensure_settings_file()
+    files.ensure_todo_file()
 
 @click.command(help='List tasks')
 @click.option('--all', 'flags', flag_value='all', multiple=True, is_flag=True, default=[], help='List all tasks from all levels')
