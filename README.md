@@ -1,6 +1,8 @@
 # Check - Turning to-dos into ta-das!
 A TODO application in the terminal. Instead of creating todo lists in Notepad or other boring editors, you can get to feel more like a hacker with "Check".
 
+![Check](https://github.com/ilarisilander/check/blob/master/check.PNG)
+
 # Table of contents
 <!--ts-->
    * [Table of contents](#table-of-contents)
