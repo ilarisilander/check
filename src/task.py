@@ -109,7 +109,7 @@ class Update:
         if task_id in todo_dict['todo']:
             todo_dict['done'][task_id] = todo_dict['todo'][task_id]
             todo_dict['done'][task_id]['done_date'] = CURRENT_DATE
-            todo_dict['done'][task_id]['is_done'] = "Yes"
+            todo_dict['done'][task_id]['is_done'] = "yes"
             todo_dict['todo'].pop(task_id)
             JsonFile.write(TODO_PATH, todo_dict)
             print(f'Task with ID: {task_id} was moved to "done"')
