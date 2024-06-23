@@ -19,7 +19,7 @@ class Files:
                 "colors": {
                     "low": "green",
                     "medium": "yellow",
-                    "high": "orange",
+                    "high": "red",
                     "critical": "red"
                 }
             },

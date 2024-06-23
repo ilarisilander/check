@@ -1,7 +1,6 @@
 cli_app_venv/
 __pycache__/
 .vscode/
-data/todo_list.json
 build/
 dist/
 check.egg-info/
