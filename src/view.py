@@ -43,5 +43,9 @@ class Display:
         self.console.print(table)
 
     def add_color(self, text_value: str, category: str):
-        color = self.settings_dict[category]['colors'][text_value]
+        if not category == 'deadline':
+            color = self.settings_dict[category]['colors'][text_value]
+        else:
+            # TODO: Make some better coloring of deadlines
+            color = 'white'
         return Text(text_value, style=color)
