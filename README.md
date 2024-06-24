@@ -8,7 +8,8 @@ A TODO application in the terminal. Instead of creating todo lists in Notepad or
    * [Table of contents](#table-of-contents)
    * [Pre-requisites](#pre-requisites)
    * [Installation](#installation)
-   * [How to](#how-to)
+   * [User: How to](#user-how-to)
+   * [Dev: How to](#dev-how-to)
 <!--te-->
 
 # Pre-requisites
@@ -34,7 +35,7 @@ pipx ensurepath
 
 When the pipx installation is done, you run pipx ensurepath and then Check is ready to be used!
 
-# How to
+# User: How to
 The best way to understand what can be done with Check
 ```bash
 check --help
@@ -65,3 +66,22 @@ This will move the task with ID 5 to "in-progress".
 check done --id 5
 ```
 This will move the task with ID 5 to "done".
+
+# Dev: How to
+
+Preparation
+```bash
+python -m venv my_venv
+source my_venv/Scripts/activate
+pip install -r requirements.txt
+```
+
+Creating the wheel (run the setup.py)
+```bash
+python setup.py sdist bdist_wheel
+```
+
+Install the wheel as pipx package
+```bash
+pipx install dist/<wheel package>
+```
