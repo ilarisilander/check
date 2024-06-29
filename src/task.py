@@ -55,7 +55,7 @@ class Create:
         default_dict = {
             'id_count': 0,
             'todo': {},
-            'in_progress': {},
+            'active': {},
             'done': {}
         }
         with open(TODO_PATH, 'w', encoding='utf-8') as file:
@@ -71,8 +71,8 @@ class Read:
     def tasks(self, flag: str) -> None:
         if flag == 'all':
             self._all_tasks()
-        elif flag == 'in_progress':
-            self._in_progress_tasks()
+        elif flag == 'active':
+            self._active_tasks()
         elif flag == 'todo':
             self._todo_tasks()
         elif flag == 'done':
@@ -80,11 +80,11 @@ class Read:
 
     def _all_tasks(self):
         self.display.tasks('todo')
-        self.display.tasks('in_progress')
+        self.display.tasks('active')
         self.display.tasks('done')
 
-    def _in_progress_tasks(self):
-        self.display.tasks('in_progress')
+    def _active_tasks(self):
+        self.display.tasks('active')
 
     def _todo_tasks(self):
         self.display.tasks('todo')
@@ -96,10 +96,10 @@ class Update:
     def start_task(task_id: str):
         todo_dict = JsonFile.read(TODO_PATH)
         if task_id in todo_dict['todo']:
-            todo_dict['in_progress'][task_id] = todo_dict['todo'][task_id]
+            todo_dict['active'][task_id] = todo_dict['todo'][task_id]
             todo_dict['todo'].pop(task_id)
             JsonFile.write(TODO_PATH, todo_dict)
-            print(f'Task with ID: {task_id} was moved to "in progress"')
+            print(f'Task with ID: {task_id} was moved to "active"')
         else:
             print(f'There is no task with ID: {task_id} in "todo"')
 
@@ -113,15 +113,37 @@ class Update:
             todo_dict['todo'].pop(task_id)
             JsonFile.write(TODO_PATH, todo_dict)
             print(f'Task with ID: {task_id} was moved to "done"')
-        elif task_id in todo_dict['in_progress']:
-            todo_dict['done'][task_id] = todo_dict['in_progress'][task_id]
+        elif task_id in todo_dict['active']:
+            todo_dict['done'][task_id] = todo_dict['active'][task_id]
             todo_dict['done'][task_id]['done_date'] = CURRENT_DATE
             todo_dict['done'][task_id]['is_done'] = "yes"
-            todo_dict['in_progress'].pop(task_id)
+            todo_dict['active'].pop(task_id)
             JsonFile.write(TODO_PATH, todo_dict)
             print(f'Task with ID: {task_id} was moved to "done"')
         else:
             print(f'There is no task with ID: {task_id} in "todo"')
+
+    def change_task(id, **kwargs):
+        todo_dict = JsonFile.read(TODO_PATH)
+        for category, task in todo_dict.items():
+            if category != 'id_count' and id in task.keys():
+                for key_to_change, value in kwargs.items():
+                    todo_dict[category][id][key_to_change] = value
+                    print(f'Changed {key_to_change} to {value}')
+        JsonFile.write(TODO_PATH, todo_dict)
+
+    def move_task(id, destination):
+        todo_dict = JsonFile.read(TODO_PATH)
+        for category, tasks in todo_dict.items():
+            if category != 'id_count':
+                if id in tasks.keys():
+                    todo_dict[destination][id] = tasks[id]
+                    if category == 'done':
+                        todo_dict[destination][id]['is_done'] = 'no'
+                        todo_dict[destination][id]['done_date'] = None
+                    todo_dict[category].pop(id)
+                    JsonFile.write(TODO_PATH, todo_dict)
+                    print(f'Task with ID: {id} was moved to {destination}')
 
 
 class Delete:

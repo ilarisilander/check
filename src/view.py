@@ -17,15 +17,15 @@ class Display:
         task_dict = JsonFile.get_all_tasks(todo_dict)
 
         table = Table(title=category.upper(), show_lines=True, style='steel_blue3')
-        table.add_column("ID", style="white", justify="center", width=3)
-        table.add_column("Title", style="white", justify="center", width=20)
-        table.add_column("Description", style="white", justify="center", width=25)
-        table.add_column("Priority", style="white", justify="center", width=8)
-        table.add_column("Size", style="white", justify="center", width=6)
-        table.add_column("Deadline", style="white", justify="center", width=10)
-        table.add_column("Create Date", style="white", justify="center", width=10)
-        table.add_column("Done Date", style="white", justify="center", width=10)
-        table.add_column("Done", style="white", justify="center", width=4)
+        table.add_column("ID", style="white", justify="center", width=5)
+        table.add_column("Title", style="white", justify="center", width=25)
+        table.add_column("Description", style="white", justify="center", width=30)
+        table.add_column("Priority", style="white", justify="center")
+        table.add_column("Size", style="white", justify="center")
+        table.add_column("Deadline", style="white", justify="center")
+        table.add_column("Create Date", style="white", justify="center")
+        table.add_column("Done Date", style="white", justify="center")
+        table.add_column("Done", style="white", justify="center")
 
         for task, info in task_dict[category].items():
             table.add_row(

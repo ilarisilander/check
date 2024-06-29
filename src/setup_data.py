@@ -11,7 +11,7 @@ class Files:
         self.todo_dict = {
             "id_count": 0,
             "todo": {},
-            "in_progress": {},
+            "active": {},
             "done": {}
         }
         self.settings_dict = {

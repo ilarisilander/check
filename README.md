@@ -52,14 +52,14 @@ You can also add --priority, --size and --deadline (using this format: 2024-06-2
 ```bash
 check list --all
 ```
-This will list all tables (todo, in-progress and done).
-Instead of --all, you can use --todo or --in-progress.
+This will list all tables (todo, active and done).
+Instead of --all, you can use --todo or --active.
 
 ### Start a task
 ```bash
 check start --id 5 (the number represents the ID of the task, which you can find by listing tasks)
 ```
-This will move the task with ID 5 to "in-progress".
+This will move the task with ID 5 to "active".
 
 ### Move task to done
 ```bash
