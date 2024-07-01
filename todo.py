@@ -3,14 +3,13 @@ import click
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
 from src.setup_data import Files
+from src.constants import APP_VERSION
 
 console = Console()
 
-__version__ = '0.1.2'
-
 
 @click.group()
-@click.version_option(version=__version__, prog_name='check')
+@click.version_option(version=APP_VERSION, prog_name='check')
 def check():
     files = Files()
     files.ensure_appdata_dir()
@@ -101,10 +100,31 @@ def is_valid_option(option):
         return True
     return False
 
+@click.command(help='Search for a task')
+@click.option('-i', '--id', default=None, help='The ID of the task')
+@click.option('-t', '--title', default=None, help='Title of the task')
+@click.option('-ds', '--description', default=None, help='Description of the task')
+@click.option('-p', '--priority', default=None, help='Task priority: low, medium, high, critical')
+@click.option('-s', '--size', default=None, help='Task size: small, medium, large')
+@click.option('-dl', '--deadline', default=None, help='Deadline of the task')
+@click.option('-d', '--is-done', default=None, help='Is task done? "yes" or "no"')
+def search(id, title, description, priority, size, deadline, is_done):
+    filtered_options = filter_options(
+        id=id,
+        title=title,
+        description=description,
+        priority=priority,
+        size=size,
+        deadline=deadline,
+        is_done=is_done)
+    read = Read()
+    read.search_task(**filtered_options)
+
 
 check.add_command(add)
 check.add_command(start)
 check.add_command(list)
+check.add_command(search)
 check.add_command(change)
 check.add_command(move)
 check.add_command(delete)

@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
+from src.constants import APP_VERSION
+
 
 setup(
     name='check',
-    version='0.1.2',
+    version=APP_VERSION,
     packages=find_packages(where='.'),
     py_modules=['todo'],
     install_requires=[

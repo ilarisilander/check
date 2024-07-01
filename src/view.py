@@ -11,7 +11,6 @@ class Display:
         self.console = Console()
         self.settings_dict = JsonFile.read(SETTINGS_PATH)
 
-
     def tasks(self, category: str):
         todo_dict = JsonFile.read(TODO_PATH)
         task_dict = JsonFile.get_all_tasks(todo_dict)
@@ -28,6 +27,34 @@ class Display:
         table.add_column("Done", style="white", justify="center")
 
         for task, info in task_dict[category].items():
+            table.add_row(
+                task,
+                info['title'],
+                info['description'],
+                self.add_color(str(info['priority']), 'priority'),
+                self.add_color(str(info['size']), 'size'),
+                self.add_color(str(info['deadline']), 'deadline'),
+                str(info['create_date']),
+                str(info['done_date']),
+                self.add_color(str(info['is_done']), 'is_done')
+            )
+
+        self.console.print(table)
+
+    def filtered_tasks(self, todos: dict):
+        # TODO: Repetitive code, this should be refactored
+        table = Table(title='SEARCH_RESULT', show_lines=True, style='steel_blue3')
+        table.add_column("ID", style="white", justify="center", width=5)
+        table.add_column("Title", style="white", justify="center", width=25)
+        table.add_column("Description", style="white", justify="center", width=30)
+        table.add_column("Priority", style="white", justify="center")
+        table.add_column("Size", style="white", justify="center")
+        table.add_column("Deadline", style="white", justify="center")
+        table.add_column("Create Date", style="white", justify="center")
+        table.add_column("Done Date", style="white", justify="center")
+        table.add_column("Done", style="white", justify="center")
+
+        for task, info in todos.items():
             table.add_row(
                 task,
                 info['title'],

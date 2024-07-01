@@ -3,6 +3,9 @@ import os
 import datetime
 from pathlib import Path
 
+
+APP_VERSION = '0.1.3'
+
 # PATHS
 if os.name == 'nt':  # Windows
     APPDATA = Path(os.getenv('LOCALAPPDATA')) 
