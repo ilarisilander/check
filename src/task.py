@@ -106,7 +106,7 @@ class Read:
 
     def _filter_by_criteria(self, task: dict, **search_criteria) -> bool:
         for option, criteria in search_criteria.items():
-            if not criteria.lower() in task[option].lower():
+            if not str(criteria).lower() in str(task[option]).lower():
                 return False
         return True
 

@@ -101,16 +101,14 @@ def is_valid_option(option):
     return False
 
 @click.command(help='Search for a task')
-@click.option('-i', '--id', default=None, help='The ID of the task')
 @click.option('-t', '--title', default=None, help='Title of the task')
 @click.option('-ds', '--description', default=None, help='Description of the task')
 @click.option('-p', '--priority', default=None, help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default=None, help='Task size: small, medium, large')
 @click.option('-dl', '--deadline', default=None, help='Deadline of the task')
 @click.option('-d', '--is-done', default=None, help='Is task done? "yes" or "no"')
-def search(id, title, description, priority, size, deadline, is_done):
+def search(title, description, priority, size, deadline, is_done):
     filtered_options = filter_options(
-        id=id,
         title=title,
         description=description,
         priority=priority,
