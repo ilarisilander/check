@@ -135,6 +135,7 @@ class Update:
                     todo_dict[category].pop(task_id)
                     JsonFile.write(TODO_PATH, todo_dict)
                     print(f'Task with ID: {task_id} was moved to "done"')
+                    return
                 else:
                     print(f'Task with ID: {task_id} is already done')
 
