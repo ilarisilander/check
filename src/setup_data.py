@@ -3,7 +3,7 @@ import os
 import json
 
 from pathlib import Path
-from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH
+from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH, DELETED_DIR
 
 
 class Files:
@@ -54,6 +54,11 @@ class Files:
         if not APPDATA_DIR.exists():
             APPDATA_DIR.mkdir(parents=True, exist_ok=True)
             print(f'Created an AppData directory in {APPDATA_DIR}')
+
+    def ensure_deleted_dir(self):
+        if not DELETED_DIR.exists():
+            DELETED_DIR.mkdir(parents=True, exist_ok=True)
+            print(f'Created delete directory in {DELETED_DIR}')
 
     def ensure_settings_file(self):
         if not SETTINGS_PATH.exists():

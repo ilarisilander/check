@@ -1,9 +1,10 @@
 """ Logic to handle processes for the settings """
 import os
+import shutil
 import re
 
 from src.file_handler import JsonFile
-from src.constants import SETTINGS_PATH, APPDATA_DIR, TODO_PATH
+from src.constants import SETTINGS_PATH, APPDATA_DIR, TODO_PATH, DELETED_DIR
 from pathlib import Path
 
 
@@ -37,8 +38,10 @@ class Todo:
         JsonFile.write(SETTINGS_PATH, settings)
 
     def remove_todo_file(name: str):
+        """ Move the 'deleted' directory to have a bit of a backup """
         file_path = Path(TODO_PATH) / (name + '.json')
-        os.remove(file_path)
+        destination_path = Path(DELETED_DIR) / (name + '.json')
+        shutil.move(str(file_path), str(destination_path))
 
     def is_active_list(name: str) -> bool:
         settings = JsonFile.read(SETTINGS_PATH)

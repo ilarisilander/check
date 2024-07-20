@@ -16,6 +16,7 @@ console = Console()
 def check():
     files = Files()
     files.ensure_appdata_dir()
+    files.ensure_deleted_dir()
     files.ensure_settings_file()
     if not files.ensure_todo_file():
         if click.confirm(f'There is no todo lists in {TODO_PATH}. Do you want to create a list?', default=True):
@@ -175,7 +176,7 @@ def remove(name: str):
     if click.confirm(f'Are you sure that you want to remove the todo list named "{name}" permanently?' , default=False):
         Todo.remove_todo_list(name)
         Todo.remove_todo_file(name)
-        click.echo(f'Todo list named "{name}" has been removed')
+        click.echo(f'Todo list named "{name}" has been removed, or rather moved in the data/lists/deleted directory')
 
 @click.command()
 def show():
