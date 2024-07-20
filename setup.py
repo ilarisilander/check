@@ -6,14 +6,14 @@ setup(
     name='check',
     version=APP_VERSION,
     packages=find_packages(where='.'),
-    py_modules=['todo'],
+    py_modules=['cli'],
     install_requires=[
         'click',
         'rich'
     ],
     entry_points={
         'console_scripts': [
-            'check=todo:check',
+            'check=cli:check',
         ],
     },
 )

@@ -1,5 +1,8 @@
 import json
 
+from pathlib import Path
+
+
 class JsonFile:
     
     def read(file_path: str) -> dict:
@@ -20,3 +23,15 @@ class JsonFile:
     def get_all_tasks(todo: dict) -> dict:
         todo.pop('id_count')
         return todo
+
+    def create_todo_file(file_path, name):
+        placeholder_data = {
+            "id_count": 0,
+            "todo": {},
+            "active": {},
+            "done": {}
+        }
+        json_path = Path(file_path) / (name + '.json')
+        json_path.parent.mkdir(parents=True, exist_ok=True)  # Create if it does not exist
+        with open(json_path, 'w', encoding='utf-8') as file:
+            json.dump(placeholder_data, file, ensure_ascii=False, indent=4)

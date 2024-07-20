@@ -3,7 +3,10 @@ import click
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
 from src.setup_data import Files
-from src.constants import APP_VERSION
+from src.settings_handler import Todo
+from src.constants import APP_VERSION, TODO_PATH
+from src.file_handler import JsonFile
+from src.view import Display
 
 console = Console()
 
@@ -14,8 +17,24 @@ def check():
     files = Files()
     files.ensure_appdata_dir()
     files.ensure_settings_file()
-    files.ensure_todo_file()
+    if not files.ensure_todo_file():
+        if click.confirm(f'There is no todo lists in {TODO_PATH}. Do you want to create a list?', default=True):
+            while True:
+                list_name = click.prompt('Enter list name', type=str)
+                if Todo.is_valid_list_name(list_name):
+                    JsonFile.create_todo_file(TODO_PATH, list_name)
+                    Todo.create_todo_list(list_name)
+                    Todo.change_active_todo_list(list_name)
+                    break
+                else:
+                    click.echo('Invalid file name. Example valid name: games_todo.')
 
+@click.group()
+def todo():
+    """ Handle todo lists """
+    pass
+
+# Check commands
 @click.command(help='List tasks')
 @click.option('-a', '--all', 'flags', flag_value='all', multiple=True, is_flag=True, default=[], help='List all tasks from all levels')
 @click.option('-t', '--todo', 'flags', flag_value='todo', multiple=True, is_flag=True, default=[], help='List all tasks from "todo"')
@@ -48,9 +67,9 @@ def add(title: str, description: str, priority: str, size: str, deadline: str):
     create = Create(title, description, priority, size, deadline)
     try:
         create.new_task()
+        click.echo(f'Task added to the todo list')
     except Exception as e:
         click.echo(e)
-    click.echo(f'Task added to the todo list')
 
 @click.command(help='Start a task, moving the task to active')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to active')
@@ -118,7 +137,53 @@ def search(title, description, priority, size, deadline, is_done):
     read = Read()
     read.search_task(**filtered_options)
 
+# Todo commands
+@click.command()
+@click.option('-n', '--name', required=True, help='Name of the todo list that you want to use. Eg. todo_application')
+def use(name: str):
+    """ Todo list to use """
+    if not Todo.is_valid_list_name(name):
+        raise click.UsageError(f'{name} is not a valid name. Please use this format: file_name')
+    if not Todo.list_exists(name):
+        if click.confirm(f'There is no todo list named {name}. Do you want to create it?', default=True):
+            Todo.create_todo_list(name)
+            Todo.change_active_todo_list(name)
+    if not Todo.is_active_list(name):
+        Todo.change_active_todo_list(name)
 
+@click.command()
+@click.option('-n', '--name', required=True, help='Name of the new todo list. Eg. friday_chores')
+@click.option('-u', '--use', is_flag=True, help='Use the new todo list that is created')
+def new(name: str, use: bool):
+    """ Create a new todo list """
+    if not Todo.is_valid_list_name(name):
+        raise click.UsageError(f'{name} is not a valid name. Please use this format: file_name')
+    if not Todo.list_exists(name):
+        JsonFile.create_todo_file(TODO_PATH, name)
+        Todo.create_todo_list(name)
+    if use:
+        Todo.change_active_todo_list(name)
+
+@click.command()
+@click.option('-n', '--name', required=True, help='Name of the list to remove')
+def remove(name: str):
+    """ Remove an inactive list """
+    if not Todo.list_exists(name):
+        raise click.UsageError(f'There is no list named {name}')
+    if Todo.get_active_todo_list() == name:
+        raise click.UsageError(f'Cannot remove {name} when it is active')
+    if click.confirm(f'Are you sure that you want to remove the todo list named "{name}" permanently?' , default=False):
+        Todo.remove_todo_list(name)
+        Todo.remove_todo_file(name)
+        click.echo(f'Todo list named "{name}" has been removed')
+
+@click.command()
+def show():
+    """ Display todo lists """
+    display = Display()
+    display.todo_lists()
+
+# Sub-commands for 'check'
 check.add_command(add)
 check.add_command(start)
 check.add_command(list)
@@ -127,10 +192,21 @@ check.add_command(change)
 check.add_command(move)
 check.add_command(delete)
 check.add_command(done)
+check.add_command(todo)
+
+# Sub-commands for 'todo'
+todo.add_command(new)
+todo.add_command(use)
+todo.add_command(show)
+todo.add_command(remove)
 
 
 if __name__ == '__main__':
     try:
         check()
     except click.UsageError as e:
+        click.echo(e)
+    except click.ClickException as e:
+        click.echo(e)
+    except Exception as e:
         click.echo(e)

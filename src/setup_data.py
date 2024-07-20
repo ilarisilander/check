@@ -2,8 +2,8 @@
 import os
 import json
 
-from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH
 from pathlib import Path
+from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH
 
 
 class Files:
@@ -60,10 +60,13 @@ class Files:
             SETTINGS_PATH.write_text(json.dumps(self.settings_dict))
             print(f'Created a new settings file in {SETTINGS_PATH}')
 
-    def ensure_todo_file(self):
-        if not TODO_PATH.exists():
-            TODO_PATH.write_text(json.dumps(self.todo_dict))
-            print(f'Created a new todo list file in {TODO_PATH}')
+    def ensure_todo_file(self) -> bool:
+        if not os.path.exists(TODO_PATH):
+            os.makedirs(TODO_PATH)
+        has_files = any(TODO_PATH.iterdir())
+        if not has_files:
+            return False
+        return True
 
 
 if __name__ == '__main__':
