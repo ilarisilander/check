@@ -176,7 +176,7 @@ def remove(name: str):
     if click.confirm(f'Are you sure that you want to remove the todo list named "{name}" permanently?' , default=False):
         Todo.remove_todo_list(name)
         Todo.remove_todo_file(name)
-        click.echo(f'Todo list named "{name}" has been removed, or rather moved in the data/lists/deleted directory')
+        click.echo(f'Todo list named "{name}" has been removed, or rather moved to the data/lists/deleted directory')
 
 @click.command()
 def show():
