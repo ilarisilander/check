@@ -30,6 +30,8 @@ def check():
                     break
                 else:
                     click.echo('Invalid file name. Example valid name: games_todo.')
+        else:
+            raise click.UsageError('You need to create a list to use the functions of Check')
 
 @click.group()
 def todo():
@@ -66,10 +68,11 @@ def delete(id: str):
 @click.option('-s', '--size', default='medium', help='Task size: small, medium, large')
 @click.option('-dl', '--deadline', default='None', help='Deadline of the task')
 def add(title: str, description: str, priority: str, size: str, deadline: str):
-    if not Deadline.is_corret_format(deadline):
-        raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
-    if not Deadline.is_newer_than_old_date(deadline):
-        raise click.UsageError('Deadline date cannot be older than today unless you are a time traveller')
+    if not deadline == 'None':
+        if not Deadline.is_corret_format(deadline):
+            raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
+        if not Deadline.is_newer_than_old_date(deadline):
+            raise click.UsageError('Deadline date cannot be older than today unless you are a time traveller')
     create = Create(title, description, priority, size, deadline)
     try:
         create.new_task()

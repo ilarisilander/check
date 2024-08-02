@@ -16,7 +16,7 @@ else:
     APPDATA = os.path.expanduser('~/.local/share')
 APPDATA_DIR = Path(APPDATA) / 'check' / 'data'
 TODO_PATH = Path(APPDATA_DIR) / 'lists'
-DELETED_DIR = Path(TODO_PATH) / 'deleted'
+DELETED_DIR = Path(APPDATA_DIR) / 'deleted'
 SETTINGS_PATH = Path(APPDATA_DIR) / 'todo_settings.json'
 
 # DATES
