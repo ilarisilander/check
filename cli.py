@@ -7,6 +7,7 @@ from src.settings_handler import Todo
 from src.constants import APP_VERSION, TODO_PATH
 from src.file_handler import JsonFile
 from src.view import Display
+from src.validate import Deadline
 
 console = Console()
 
@@ -65,6 +66,10 @@ def delete(id: str):
 @click.option('-s', '--size', default='medium', help='Task size: small, medium, large')
 @click.option('-dl', '--deadline', default='None', help='Deadline of the task')
 def add(title: str, description: str, priority: str, size: str, deadline: str):
+    if not Deadline.is_corret_format(deadline):
+        raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
+    if not Deadline.is_newer_than_old_date(deadline):
+        raise click.UsageError('Deadline date cannot be older than today unless you are a time traveller')
     create = Create(title, description, priority, size, deadline)
     try:
         create.new_task()
@@ -98,7 +103,7 @@ def change(id: str, title: str, description: str, priority: str, size: str, dead
         deadline=deadline)
     Update.change_task(id, **filtered_options)
 
-def filter_options(**kwargs):
+def filter_options(**kwargs) -> dict:
     filtered_kwargs = {}
     for key, value in kwargs.items():
         if not value is None:
