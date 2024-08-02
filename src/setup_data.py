@@ -15,6 +15,10 @@ class Files:
             "done": {}
         }
         self.settings_dict = {
+            "lists": {
+                "active": "",
+                "inactive": []
+            },
             "priority": {
                 "colors": {
                     "low": "green",
