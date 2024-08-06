@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 
-APP_VERSION = '0.1.7'
+APP_VERSION = '0.1.8'
 
 
 # PATHS
