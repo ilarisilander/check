@@ -1,0 +1,41 @@
+MOBILITY
+########
+-   Need to be able to download the executable with dependencies from GITHUB
+-   Build it with pipx
+-   It should be executable from anywhere in the computer
+
+FEATURES
+########
+-   Add task to todo list [done]
+-   Remove task from todo list [done]
+    -   Remove all tasks from todo list (if there's several and you want to just wipe them all)
+-   Display all tasks [done]
+-   Completed: [done]
+    -   Green text or checkbox to indicate that a task is completed
+    -   Red text or checkbox to indicate that a task is NOT completed
+-   Time for when the task was created [done]
+-   Time for when the task was completed [done]
+-   Priority -> high, medium, low [done]
+-   Task size -> big, medium, small -> default = small [done]
+-   Due dates to display what the deadline is for certain tasks
+-   Sorting:
+    -   Task name
+    -   Priority
+    -   Deadlines
+-   Undo:
+    -   How many steps will be saved?
+    -   Eg. todo --undo 10 -> this will undo 10 actions
+-   Redo:
+    -   How many steps will be saved?
+    -   Eg. todo --redo 10 -> will redo 10 actions
+-   Configuration:
+    -   Defaults for different things like task size, priority and due dates etc.
+    -   Keyboard shortcuts
+    -   Colors?
+    -   Deadline warning
+-   Backup
+    -   Store in a database
+    -   In remote destination (webserver, some cloud?)
+    -   OneDrive?
+-   Sync
+    -   Syncronize the lists between remote and local

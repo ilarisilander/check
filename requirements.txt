@@ -1,0 +1,6 @@
+click
+rich
+pipx
+coverage
+wheel
+requests
