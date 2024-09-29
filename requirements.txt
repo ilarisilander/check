@@ -4,3 +4,4 @@ pipx
 coverage
 wheel
 requests
+setuptools

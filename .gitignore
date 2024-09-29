@@ -1,4 +1,4 @@
-cli_app_venv/
+check_venv/
 __pycache__/
 .vscode/
 build/

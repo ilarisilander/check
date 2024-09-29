@@ -3,11 +3,16 @@ import click
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
 from src.setup_data import Files
-from src.settings_handler import Todo
+from src.settings_handler import Todo, Jira
 from src.constants import APP_VERSION, TODO_PATH
 from src.file_handler import JsonFile
 from src.view import Display
 from src.validate import Deadline, Priority, Size
+# Import simple_vira if it exists
+try:
+    from simple_vira import Api
+except ImportError:
+    pass
 
 console = Console()
 
@@ -67,8 +72,9 @@ def delete(id: str):
 @click.option('-p', '--priority', default='medium', help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default='medium', help='Task size: small, medium, large')
 @click.option('-dl', '--deadline', default='None', help='Deadline of the task')
-@click.option('-v', '--vira', is_flag=True, help='Send information to Vira')
-def add(title: str, description: str, priority: str, size: str, deadline: str, vira: bool):
+@click.option('-j', '--jira', is_flag=True, help='Send information to Jira')
+def add(title: str, description: str, priority: str, size: str, deadline: str, jira: bool):
+    issue = 'None'
     if not deadline == 'None':
         if not Deadline.is_corret_format(deadline):
             raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
@@ -78,12 +84,28 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, v
         raise click.UsageError('Priority can only be low, medium, high or critical')
     if not Size.is_valid_option(size):
         raise click.UsageError('Size can only be small, medium or large')
-    create = Create(title, description, priority, size, deadline)
+    if jira:
+        try:
+            config = Jira()
+            base_url = config.get_base_url()
+            api_token = config.get_api_token()
+            user_token = config.get_user_token()
+            project = config.get_project()
+            work_group = config.get_leading_work_group()
+            issue_type = config.get_issue_type_story()
+        except Exception as config_error:
+            click.echo(config_error)
+
+        try:
+            api = Api(base_url, api_token, user_token)
+            issue = api.create_issue(title, description, project, issue_type, work_group)
+            click.echo(f'Issue added to Jira with ID: {issue}')
+        except Exception as e:
+            click.echo(e)
+
+    create = Create(issue, title, description, priority, size, deadline)
     try:
         create.new_task()
-        if vira:
-            #TODO: Call function to create Vira ticket
-            pass
         click.echo(f'Task added to the todo list')
     except Exception as e:
         click.echo(e)

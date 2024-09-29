@@ -20,11 +20,6 @@ class Files:
                 "active": "",
                 "inactive": []
             },
-            "api": {
-                "base_url": "",
-                "user_token": "",
-                "api_token": ""
-            },
             "priority": {
                 "colors": {
                     "low": "green",

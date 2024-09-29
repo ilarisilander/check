@@ -1,12 +1,12 @@
 """ Module for displaying things in the CLI application """
 
 from pathlib import Path
-from src.constants import TODO_PATH, SETTINGS_PATH, CURRENT_DATE
 from rich.table import Table
 from rich.text import Text
 from rich.console import Console
 from src.file_handler import JsonFile
 from src.settings_handler import Todo
+from src.constants import TODO_PATH, SETTINGS_PATH, CURRENT_DATE
 
 class Display:
     def __init__(self) -> None:
@@ -21,7 +21,7 @@ class Display:
 
     def tasks(self, category: str):
         active_list = Todo.get_active_todo_list()
-        active_list_path = Path(TODO_PATH) / (active_list + '.json') 
+        active_list_path = Path(TODO_PATH) / (active_list + '.json')
         todo_dict = JsonFile.read(active_list_path)
         task_dict = JsonFile.get_all_tasks(todo_dict)
 

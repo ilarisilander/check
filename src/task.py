@@ -16,7 +16,8 @@ from src.settings_handler import Todo
 
 class Create:
     """ Creation of tasks """
-    def __init__(self, title:str, description: str, priority, size, deadline):
+    def __init__(self, issue, title: str, description: str, priority, size, deadline):
+        self.issue = issue
         self.title = title
         self.description = description
         self.priority = priority
@@ -38,6 +39,7 @@ class Create:
         """ Add a new task to the old todo dict and return a new dict """
         task_id = todo['id_count'] + 1
         task_data = {
+            'issue': self.issue,
             'title': self.title,
             'description': self.description,
             'priority': self.priority,
@@ -45,7 +47,7 @@ class Create:
             'create_date': CURRENT_DATE,
             'done_date': None,
             'is_done': "no",
-            'deadline': self.deadline
+            'deadline': self.deadline,
         }
         todo['id_count'] = task_id
         todo['todo'][task_id] = task_data
