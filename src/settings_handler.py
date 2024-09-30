@@ -1,15 +1,14 @@
 """ Logic to handle processes for the settings """
-import os
 import shutil
 import re
 
 from src.file_handler import JsonFile
-from src.constants import SETTINGS_PATH, APPDATA_DIR, TODO_PATH, DELETED_DIR, JIRA_SETTINGS_PATH
+from src.constants import SETTINGS_PATH, APPDATA_DIR, TODO_PATH, DELETED_DIR
 from pathlib import Path
 
 
 class Todo:
-
+    """ Class to handle the list section of the settings """
     @staticmethod
     def is_valid_list_name(list_name: str) -> bool:
         pattern = r'^[a-z0-9]+(_[a-z0-9]+)*$'
@@ -79,41 +78,6 @@ class Todo:
         settings['lists']['inactive'].remove(new_list)  # Remove the new active from the inactive list
         JsonFile.write(SETTINGS_PATH, settings)
         print(f'{new_list} is now the active list')
-
-
-class Jira:
-    def __init__(self) -> None:
-        self.jira_settings = JsonFile.read(JIRA_SETTINGS_PATH)
-
-    def get_base_url(self) -> str:
-        return self.jira_settings['credentials']['base_url']
-
-    def get_user_token(self) -> str:
-        return self.jira_settings['credentials']['user_token']
-
-    def get_api_token(self) -> str:
-        return self.jira_settings['credentials']['api_token']
-
-    def get_leading_work_group(self) -> dict:
-        return self.jira_settings['leading_work_group']
-
-    def get_project(self) -> str:
-        return self.jira_settings['project']
-
-    def get_assignee(self) -> str:
-        return self.jira_settings['assignee']
-
-    def get_issue_type_story(self) -> str:
-        return self.jira_settings['issuetype']['story']
-
-    def get_transition_todo(self) -> str:
-        return self.jira_settings['transitions']['todo']
-
-    def get_transitions_in_progress(self) -> str:
-        return self.jira_settings['transitions']['in_progress']
-
-    def get_transitions_done(self) -> str:
-        return self.jira_settings['transitions']['done']
 
 
 if __name__ == '__main__':

@@ -3,11 +3,13 @@ import click
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
 from src.setup_data import Files
-from src.settings_handler import Todo, Jira
+from src.configuration import Jira
+from src.settings_handler import Todo
 from src.constants import APP_VERSION, TODO_PATH
 from src.file_handler import JsonFile
 from src.view import Display
 from src.validate import Deadline, Priority, Size
+from src.todo import List
 # Import simple_vira if it exists
 try:
     from simple_vira import Api
@@ -33,8 +35,7 @@ def check():
                     Todo.create_todo_list(list_name)
                     Todo.change_active_todo_list(list_name)
                     break
-                else:
-                    click.echo('Invalid file name. Example valid name: games_todo.')
+                click.echo('Invalid file name. Example valid name: games_todo.')
         else:
             raise click.UsageError('You need to create a list to use the functions of Check')
 
@@ -103,6 +104,9 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
         except Exception as e:
             click.echo(e)
 
+    if issue == 'None':  # If issue was not created in Jira, then the task will not be created locally
+        raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
+
     create = Create(issue, title, description, priority, size, deadline)
     try:
         create.new_task()
@@ -113,6 +117,23 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
 @click.command(help='Start a task, moving the task to active')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to active')
 def start(id: str):
+    issue = List.get_issue_from_task(id)
+    if issue == 'None':
+        raise click.UsageError('No issue found for this task')
+
+    config = Jira()
+    base_url = config.get_base_url()
+    api_token = config.get_api_token()
+    user_token = config.get_user_token()
+    assignee = config.get_assignee()
+    api = Api(base_url, api_token, user_token)
+    assigned = api.assign_issue(issue, assignee['name'])
+    if not assigned:
+        raise click.UsageError('Could not assign the issue to the assignee')
+    in_progress = config.get_transitions_in_progress()
+    transitioned = api.transition_issue(issue, in_progress)
+    if not transitioned:
+        raise click.UsageError('Could not transition the issue to "In Progress"')
     update = Update()
     update.start_task(id)
 
