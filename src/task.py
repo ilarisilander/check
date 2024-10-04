@@ -16,13 +16,13 @@ from src.settings_handler import Todo
 
 class Create:
     """ Creation of tasks """
-    def __init__(self, issue, title: str, description: str, priority, size, deadline):
-        self.issue = issue
+    def __init__(self, title: str, description: str, priority, size, deadline, issue=None):
         self.title = title
         self.description = description
         self.priority = priority
         self.size = size
         self.deadline = deadline
+        self.issue = issue
         self.active_list_path = Path(TODO_PATH) / (Todo.get_active_todo_list() + '.json')
 
     def new_task(self):

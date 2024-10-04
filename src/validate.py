@@ -5,7 +5,7 @@ from src.file_handler import JsonFile
 from src.constants import SETTINGS_PATH
 
 class Deadline:
-
+    @staticmethod
     def is_corret_format(date_string: str) -> bool:
         """ Check that the date has the correct format
 
@@ -14,6 +14,7 @@ class Deadline:
         pattern = r'^\d{4}-\d{2}-\d{2}$'
         return re.match(pattern, date_string) is not None
 
+    @staticmethod
     def is_newer_than_old_date(deadline: str) -> bool:
         """ Check that the date is not older than the current date
 
@@ -29,9 +30,10 @@ class Deadline:
 
 class Priority:
 
+    @staticmethod
     def is_valid_option(option: str) -> bool:
         """ Check that the option is a valid option
-        
+
         The input should be in the check settings json file
         """
         settings = JsonFile.read(SETTINGS_PATH)
@@ -44,6 +46,7 @@ class Priority:
 
 class Size:
 
+    @staticmethod
     def is_valid_option(option: str) -> bool:
         """ Check that the option is a valid option """
         settings = JsonFile.read(SETTINGS_PATH)

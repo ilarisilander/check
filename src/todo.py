@@ -16,7 +16,12 @@ class List:
         active_list_name = Todo.get_active_todo_list()
         list_path = Path(TODO_PATH) / (active_list_name + '.json')
         list_content = JsonFile.read(list_path)
-        task = list_content['todo'][task_id]
-        if 'issue' not in task:
-            return 'None'
-        return list_content['todo'][task_id]['issue']
+        for category, value in list_content.items():
+            if category == 'id_count':
+                continue
+            if task_id in value:
+                task = list_content[category][task_id]
+                if 'issue' not in task:
+                    return None
+                return list_content[category][task_id]['issue']
+        return None

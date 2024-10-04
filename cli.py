@@ -72,11 +72,13 @@ def delete(id: str):
 @click.option('-ds', '--description', required=True, help='Description of the task')
 @click.option('-p', '--priority', default='medium', help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default='medium', help='Task size: small, medium, large')
-@click.option('-dl', '--deadline', default='None', help='Deadline of the task')
+@click.option('-dl', '--deadline', default=None, help='Deadline of the task')
 @click.option('-j', '--jira', is_flag=True, help='Send information to Jira')
-def add(title: str, description: str, priority: str, size: str, deadline: str, jira: bool):
-    issue = 'None'
-    if not deadline == 'None':
+@click.option('-oj', '--only-jira', is_flag=True, help='Send only information to Jira')
+def add(title: str, description: str, priority: str, size: str, deadline: str, jira: bool, only_jira: bool):
+    if jira and only_jira:
+        raise click.UsageError('Options --jira and --only-jira are mutually exclusive. Choose one.')
+    if not deadline == None:
         if not Deadline.is_corret_format(deadline):
             raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
         if not Deadline.is_newer_than_old_date(deadline):
@@ -85,7 +87,8 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
         raise click.UsageError('Priority can only be low, medium, high or critical')
     if not Size.is_valid_option(size):
         raise click.UsageError('Size can only be small, medium or large')
-    if jira:
+
+    if jira or only_jira:
         try:
             config = Jira()
             base_url = config.get_base_url()
@@ -101,45 +104,66 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
             api = Api(base_url, api_token, user_token)
             issue = api.create_issue(title, description, project, issue_type, work_group)
             click.echo(f'Issue added to Jira with ID: {issue}')
+            if issue == None:  # If issue was not created in Jira, then the task will not be created locally
+                raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
         except Exception as e:
             click.echo(e)
 
-    if issue == 'None':  # If issue was not created in Jira, then the task will not be created locally
-        raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
-
-    create = Create(issue, title, description, priority, size, deadline)
-    try:
-        create.new_task()
-        click.echo(f'Task added to the todo list')
-    except Exception as e:
-        click.echo(e)
+    if not only_jira:
+        create = Create(title, description, priority, size, deadline, issue=None)
+        try:
+            create.new_task()
+            click.echo('Task added to the todo list')
+        except Exception as e:
+            click.echo(e)
 
 @click.command(help='Start a task, moving the task to active')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to active')
 def start(id: str):
+    # JIRA SECTION
     issue = List.get_issue_from_task(id)
-    if issue == 'None':
-        raise click.UsageError('No issue found for this task')
+    if not issue is None:
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        assignee = config.get_assignee()
+        api = Api(base_url, api_token, user_token)
+        assigned = api.assign_issue(issue, assignee['name'])
+        if not assigned:
+            raise click.UsageError('Could not assign the issue to the assignee')
+        click.echo(f'Issue assigned to {assignee["name"]}')
 
-    config = Jira()
-    base_url = config.get_base_url()
-    api_token = config.get_api_token()
-    user_token = config.get_user_token()
-    assignee = config.get_assignee()
-    api = Api(base_url, api_token, user_token)
-    assigned = api.assign_issue(issue, assignee['name'])
-    if not assigned:
-        raise click.UsageError('Could not assign the issue to the assignee')
-    in_progress = config.get_transitions_in_progress()
-    transitioned = api.transition_issue(issue, in_progress)
-    if not transitioned:
-        raise click.UsageError('Could not transition the issue to "In Progress"')
+        in_progress = config.get_transitions_in_progress()
+        transitioned = api.transition_issue(issue, in_progress)
+        if not transitioned:
+            raise click.UsageError('Could not transition the issue to "In Progress"')
+        click.echo(f'Issue transitioned to "In Progress"')
+    elif issue is None:
+        click.echo('No Jira issue found for this task')
+    # CHECK SECTION
     update = Update()
     update.start_task(id)
 
 @click.command(help='Move a task to done')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to done')
-def done(id: str):
+@click.option('-c', '--comment', default='Done', help='Comment for the task')
+def done(id: str, comment: str):
+    issue = List.get_issue_from_task(id)
+    if not issue == None:
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        api = Api(base_url, api_token, user_token)
+
+        done = config.get_transitions_done()
+        moved_to_done = api.move_issue_to_done(issue, done, comment)
+        if not moved_to_done:
+            raise click.UsageError('Could not transition the Jira issue to "Done"')
+        click.echo('Jira issue moved to done')
+    elif issue == None:
+        click.echo('No Jira issue found for this task')
     update = Update()
     update.end_task(id)
 
