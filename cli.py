@@ -76,6 +76,7 @@ def delete(id: str):
 @click.option('-j', '--jira', is_flag=True, help='Send information to Jira')
 @click.option('-oj', '--only-jira', is_flag=True, help='Send only information to Jira')
 def add(title: str, description: str, priority: str, size: str, deadline: str, jira: bool, only_jira: bool):
+    issue = None
     if jira and only_jira:
         raise click.UsageError('Options --jira and --only-jira are mutually exclusive. Choose one.')
     if not deadline == None:
@@ -110,7 +111,7 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
             click.echo(e)
 
     if not only_jira:
-        create = Create(title, description, priority, size, deadline, issue=None)
+        create = Create(title, description, priority, size, deadline, issue)
         try:
             create.new_task()
             click.echo('Task added to the todo list')

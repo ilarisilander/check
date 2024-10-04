@@ -16,7 +16,7 @@ from src.settings_handler import Todo
 
 class Create:
     """ Creation of tasks """
-    def __init__(self, title: str, description: str, priority, size, deadline, issue=None):
+    def __init__(self, title: str, description: str, priority, size, deadline, issue):
         self.title = title
         self.description = description
         self.priority = priority
@@ -195,5 +195,4 @@ class Delete:
 
 
 if __name__ == '__main__':
-    create = Create('title', 'description', 'high', 'small', None)
-    create.new_task()
+    pass
