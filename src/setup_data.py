@@ -35,18 +35,6 @@ class Files:
                     "large": "red"
                 }
             },
-            "deadline": {
-                "colors": {
-                    "critical": "red",
-                    "urgent": "yellow",
-                    "healthy": "green",
-                    "None": "white"
-                },
-                "warning": {
-                    "critical": 0.2,
-                    "urgent": 0.4
-                }
-            },
             "is_done": {
                 "colors": {
                     "yes": "green",

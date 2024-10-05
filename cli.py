@@ -1,3 +1,10 @@
+""" The entry point for the Check CLI application
+
+__author__ = "Ilari Silander"
+
+Using Click for the CLI arguments and commands.
+Using Rich for the console output (the visuals).
+"""
 import click
 
 from rich.console import Console
@@ -8,7 +15,7 @@ from src.settings_handler import Todo
 from src.constants import APP_VERSION, TODO_PATH
 from src.file_handler import JsonFile
 from src.view import Display
-from src.validate import Deadline, Priority, Size
+from src.validate import Priority, Size
 from src.todo import List
 # Import simple_vira if it exists
 try:
@@ -41,7 +48,10 @@ def check():
 
 @click.group()
 def todo():
-    """ Handle todo lists """
+    """ Handle todo lists
+
+    It's needed to add other commands to this group to make it work.
+    """
     pass
 
 # Check commands
@@ -72,18 +82,12 @@ def delete(id: str):
 @click.option('-ds', '--description', required=True, help='Description of the task')
 @click.option('-p', '--priority', default='medium', help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default='medium', help='Task size: small, medium, large')
-@click.option('-dl', '--deadline', default=None, help='Deadline of the task')
 @click.option('-j', '--jira', is_flag=True, help='Send information to Jira')
 @click.option('-oj', '--only-jira', is_flag=True, help='Send only information to Jira')
-def add(title: str, description: str, priority: str, size: str, deadline: str, jira: bool, only_jira: bool):
+def add(title: str, description: str, priority: str, size: str, jira: bool, only_jira: bool):
     issue = None
     if jira and only_jira:
         raise click.UsageError('Options --jira and --only-jira are mutually exclusive. Choose one.')
-    if not deadline == None:
-        if not Deadline.is_corret_format(deadline):
-            raise click.UsageError('Correct format for deadline is: YYYY-MM-DD. Example: 2024-08-02')
-        if not Deadline.is_newer_than_old_date(deadline):
-            raise click.UsageError('Deadline date cannot be older than today unless you are a time traveller')
     if not Priority.is_valid_option(priority):
         raise click.UsageError('Priority can only be low, medium, high or critical')
     if not Size.is_valid_option(size):
@@ -111,7 +115,7 @@ def add(title: str, description: str, priority: str, size: str, deadline: str, j
             click.echo(e)
 
     if not only_jira:
-        create = Create(title, description, priority, size, deadline, issue)
+        create = Create(title, description, priority, size, issue)
         try:
             create.new_task()
             click.echo('Task added to the todo list')
@@ -139,7 +143,7 @@ def start(id: str):
         transitioned = api.transition_issue(issue, in_progress)
         if not transitioned:
             raise click.UsageError('Could not transition the issue to "In Progress"')
-        click.echo(f'Issue transitioned to "In Progress"')
+        click.echo('Issue transitioned to "In Progress"')
     elif issue is None:
         click.echo('No Jira issue found for this task')
     # CHECK SECTION
@@ -174,15 +178,14 @@ def done(id: str, comment: str):
 @click.option('-ds', '--description', default=None, help='Description of the task')
 @click.option('-p', '--priority', default=None, help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default=None, help='Task size: small, medium, large')
-@click.option('-dl', '--deadline', default=None, help='Deadline of the task')
-def change(id: str, title: str, description: str, priority: str, size: str, deadline: str):
+def change(id: str, title: str, description: str, priority: str, size: str):
     update = Update()
     filtered_options = filter_options(
         title=title,
         description=description,
         priority=priority,
-        size=size,
-        deadline=deadline)
+        size=size
+    )
     if not Priority.is_valid_option(priority):
         raise click.UsageError('Priority can only be low, medium, high or critical')
     if not Size.is_valid_option(size):
@@ -217,15 +220,13 @@ def is_valid_option(option):
 @click.option('-ds', '--description', default=None, help='Description of the task')
 @click.option('-p', '--priority', default=None, help='Task priority: low, medium, high, critical')
 @click.option('-s', '--size', default=None, help='Task size: small, medium, large')
-@click.option('-dl', '--deadline', default=None, help='Deadline of the task')
 @click.option('-d', '--is-done', default=None, help='Is task done? "yes" or "no"')
-def search(title, description, priority, size, deadline, is_done):
+def search(title, description, priority, size, is_done):
     filtered_options = filter_options(
         title=title,
         description=description,
         priority=priority,
         size=size,
-        deadline=deadline,
         is_done=is_done)
     read = Read()
     read.search_task(**filtered_options)

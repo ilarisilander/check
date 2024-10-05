@@ -46,7 +46,7 @@ check --help
 check add --title "Add some functionality" --description "Description of the task"
 ```
 This is what is required to create a task.
-You can also add --priority, --size and --deadline (using this format: 2024-06-23).
+You can also add --priority, --size and --jira/--only-jira
 
 ### List everything
 ```bash

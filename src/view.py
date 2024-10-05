@@ -27,11 +27,11 @@ class Display:
 
         table = Table(title=category.upper(), show_lines=True, style='steel_blue3')
         table.add_column("ID", style="white", justify="center", width=5)
+        table.add_column("Issue", style="white", justify="center")
         table.add_column("Title", style="white", justify="center", width=25)
         table.add_column("Description", style="white", justify="center", width=30)
         table.add_column("Priority", style="white", justify="center")
         table.add_column("Size", style="white", justify="center")
-        table.add_column("Deadline", style="white", justify="center")
         table.add_column("Create Date", style="white", justify="center")
         table.add_column("Done Date", style="white", justify="center")
         table.add_column("Done", style="white", justify="center")
@@ -39,11 +39,11 @@ class Display:
         for task, info in task_dict[category].items():
             table.add_row(
                 task,
+                info['issue'],
                 info['title'],
                 info['description'],
                 self.add_color(str(info['priority']), 'priority'),
                 self.add_color(str(info['size']), 'size'),
-                self.add_color(str(info['deadline']), 'deadline'),
                 str(info['create_date']),
                 str(info['done_date']),
                 self.add_color(str(info['is_done']), 'is_done')
@@ -55,11 +55,11 @@ class Display:
         # TODO: Repetitive code, this should be refactored
         table = Table(title='SEARCH_RESULT', show_lines=True, style='steel_blue3')
         table.add_column("ID", style="white", justify="center", width=5)
+        table.add_column("Issue", style="white", justify="center")
         table.add_column("Title", style="white", justify="center", width=25)
         table.add_column("Description", style="white", justify="center", width=30)
         table.add_column("Priority", style="white", justify="center")
         table.add_column("Size", style="white", justify="center")
-        table.add_column("Deadline", style="white", justify="center")
         table.add_column("Create Date", style="white", justify="center")
         table.add_column("Done Date", style="white", justify="center")
         table.add_column("Done", style="white", justify="center")
@@ -67,11 +67,11 @@ class Display:
         for task, info in todos.items():
             table.add_row(
                 task,
+                info['issue'],
                 info['title'],
                 info['description'],
                 self.add_color(str(info['priority']), 'priority'),
                 self.add_color(str(info['size']), 'size'),
-                self.add_color(str(info['deadline']), 'deadline'),
                 str(info['create_date']),
                 str(info['done_date']),
                 self.add_color(str(info['is_done']), 'is_done')
@@ -80,9 +80,5 @@ class Display:
         self.console.print(table)
 
     def add_color(self, text_value: str, category: str):
-        if not category == 'deadline':
-            color = self.settings_dict[category]['colors'][text_value]
-        else:
-            # TODO: Make some better coloring of deadlines
-            color = 'white'
+        color = self.settings_dict[category]['colors'][text_value]
         return Text(text_value, style=color)

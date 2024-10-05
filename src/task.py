@@ -16,20 +16,18 @@ from src.settings_handler import Todo
 
 class Create:
     """ Creation of tasks """
-    def __init__(self, title: str, description: str, priority, size, deadline, issue):
+    def __init__(self, title: str, description: str, priority, size, issue):
         self.title = title
         self.description = description
         self.priority = priority
         self.size = size
-        self.deadline = deadline
         self.issue = issue
         self.active_list_path = Path(TODO_PATH) / (Todo.get_active_todo_list() + '.json')
 
     def new_task(self):
         """ Create a new task and add it to the todo_list.json file
 
-        The task will contain a unique ID, a DESCRIPTION, PRIORITY,
-        SIZE and DEADLINE.
+        The task will contain a unique ID, a DESCRIPTION, PRIORITY and SIZE
         """
         todo_dict = JsonFile.read(self.active_list_path)
         new_todo_dict = self._add_task_to_todo(todo_dict)
@@ -47,7 +45,6 @@ class Create:
             'create_date': CURRENT_DATE,
             'done_date': None,
             'is_done': "no",
-            'deadline': self.deadline,
         }
         todo['id_count'] = task_id
         todo['todo'][task_id] = task_data
