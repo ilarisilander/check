@@ -4,7 +4,7 @@ import json
 
 from pathlib import Path
 from src.file_handler import JsonFile
-from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH, DELETED_DIR
+from src.constants import APPDATA_DIR, SETTINGS_PATH, TODO_PATH, DELETED_DIR, JIRA_CONFIG_PATH
 
 
 class Files:
@@ -42,6 +42,35 @@ class Files:
                 }
             }
         }
+        self.jira_config_dict = {
+            "credentials": {
+                "base_url": None,
+                "api_token": None,
+                "user_token": None
+            },
+            "project": {
+                "id": None,
+                "name": None
+            },
+            "assignee": {
+                "name": None
+            },
+            "issuetype": {
+                "story": {
+                    "id": None,
+                    "name": None,
+                }
+            },
+            "leading_work_group": {
+                "value": None,
+                "id": None,
+            },
+            "transitions": {
+                "todo": None,
+                "in_progress": None,
+                "done": None
+            }
+        }
 
     def ensure_appdata_dir(self):
         if not APPDATA_DIR.exists():
@@ -74,6 +103,11 @@ class Files:
         if not has_files:
             return False
         return True
+
+    def ensure_jira_config_file(self):
+        if not JIRA_CONFIG_PATH.exists():
+            JIRA_CONFIG_PATH.write_text(json.dumps(self.jira_config_dict))
+            print(f'Created a new Jira configuration file in {JIRA_CONFIG_PATH}')
 
 
 if __name__ == '__main__':

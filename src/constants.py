@@ -17,7 +17,7 @@ APPDATA_DIR = Path(APPDATA) / 'check' / 'data'
 TODO_PATH = Path(APPDATA_DIR) / 'lists'
 DELETED_DIR = Path(APPDATA_DIR) / 'deleted'
 SETTINGS_PATH = Path(APPDATA_DIR) / 'todo_settings.json'
-JIRA_SETTINGS_PATH = Path(APPDATA_DIR) / 'jira_configuration.json'
+JIRA_CONFIG_PATH = Path(APPDATA_DIR) / 'jira_configuration.json'
 
 # DATES
 CURRENT_DATE = str(datetime.date.today())

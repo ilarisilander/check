@@ -33,6 +33,7 @@ def check():
     files.ensure_appdata_dir()
     files.ensure_deleted_dir()
     files.ensure_settings_file()
+    files.ensure_jira_config_file()
     if not files.ensure_todo_file():
         if click.confirm(f'There is no todo lists in {TODO_PATH}. Do you want to create a list?', default=True):
             while True:
@@ -49,6 +50,14 @@ def check():
 @click.group()
 def todo():
     """ Handle todo lists
+
+    It's needed to add other commands to this group to make it work.
+    """
+    pass
+
+@click.group()
+def jira():
+    """ Handle special commands related to Jira
 
     It's needed to add other commands to this group to make it work.
     """
@@ -279,6 +288,10 @@ def show():
     """ Display todo lists """
     display = Display()
     display.todo_lists()
+
+# Jira commands
+# @click.command()
+
 
 # Sub-commands for 'check'
 check.add_command(add)
