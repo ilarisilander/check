@@ -195,9 +195,11 @@ def change(id: str, title: str, description: str, priority: str, size: str):
         priority=priority,
         size=size
     )
-    if not Priority.is_valid_option(priority):
+    if not filtered_options:
+        raise click.UsageError('No options were given to change')
+    if 'priority' in filtered_options and not Priority.is_valid_option(priority):
         raise click.UsageError('Priority can only be low, medium, high or critical')
-    if not Size.is_valid_option(size):
+    if 'size' in filtered_options and not Size.is_valid_option(size):
         raise click.UsageError('Size can only be small, medium or large')
     update.change_task(id, **filtered_options)
 
