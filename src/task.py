@@ -156,12 +156,17 @@ class Update:
         for category, tasks in todo_dict.items():
             if category != 'id_count' and id in tasks.keys():
                 todo_dict[destination][id] = tasks[id]
+                if not id in todo_dict[destination]:
+                    print(f'Task with ID: {id} was not moved to {destination}')
+                    return
                 if category == 'done':
                     todo_dict[destination][id]['is_done'] = 'no'
                     todo_dict[destination][id]['done_date'] = None
                 todo_dict[category].pop(id)
                 JsonFile.write(self.active_list_path, todo_dict)
                 print(f'Task with ID: {id} was moved to {destination}')
+                return
+        print(f'Task with ID: {id} was not found in the list')
 
 
 class Delete:

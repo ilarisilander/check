@@ -1,5 +1,5 @@
+""" Thif module handles file operations """
 import json
-
 from pathlib import Path
 
 
@@ -19,6 +19,7 @@ class JsonFile:
 
     @staticmethod
     def write(file_path: str, new_data: dict) -> None:
+        assert isinstance(new_data, dict), 'new_data must be a dictionary'
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(new_data, file, indent=4)
 

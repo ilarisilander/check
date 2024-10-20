@@ -31,10 +31,10 @@ class Jira:
     def get_transition_todo(self) -> str:
         return self.jira_settings['transitions']['todo']
 
-    def get_transitions_in_progress(self) -> str:
+    def get_transition_in_progress(self) -> str:
         return self.jira_settings['transitions']['in_progress']
 
-    def get_transitions_done(self) -> str:
+    def get_transition_done(self) -> str:
         return self.jira_settings['transitions']['done']
 
 

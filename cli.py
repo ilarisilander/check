@@ -133,10 +133,11 @@ def add(title: str, description: str, priority: str, size: str, jira: bool, only
 
 @click.command(help='Start a task, moving the task to active')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to active')
-def start(id: str):
+@click.option('-oc', '--only-check', is_flag=True, help='Only move the task to active in check, not in Jira')
+def start(id: str, only_check: bool):
     # JIRA SECTION
     issue = List.get_issue_from_task(id)
-    if not issue is None:
+    if not issue is None and not only_check:
         config = Jira()
         base_url = config.get_base_url()
         api_token = config.get_api_token()
@@ -148,7 +149,7 @@ def start(id: str):
             raise click.UsageError('Could not assign the issue to the assignee')
         click.echo(f'Issue assigned to {assignee["name"]}')
 
-        in_progress = config.get_transitions_in_progress()
+        in_progress = config.get_transition_in_progress()
         transitioned = api.transition_issue(issue, in_progress)
         if not transitioned:
             raise click.UsageError('Could not transition the issue to "In Progress"')
@@ -162,16 +163,17 @@ def start(id: str):
 @click.command(help='Move a task to done')
 @click.option('-i', '--id', required=True, help='The ID of the task that will be moved to done')
 @click.option('-c', '--comment', default='Done', help='Comment for the task')
-def done(id: str, comment: str):
+@click.option('-oc', '--only-check', is_flag=True, help='Only move the task to done in check, not in Jira')
+def done(id: str, comment: str, only_check: bool):
     issue = List.get_issue_from_task(id)
-    if not issue == None:
+    if not issue == None and not only_check:
         config = Jira()
         base_url = config.get_base_url()
         api_token = config.get_api_token()
         user_token = config.get_user_token()
         api = Api(base_url, api_token, user_token)
 
-        done = config.get_transitions_done()
+        done = config.get_transition_done()
         moved_to_done = api.move_issue_to_done(issue, done, comment)
         if not moved_to_done:
             raise click.UsageError('Could not transition the Jira issue to "Done"')
@@ -213,15 +215,51 @@ def filter_options(**kwargs) -> dict:
 @click.command(help='Move task to another phase (todo, active). Moving to done can only be done with the "done" command')
 @click.option('-i', '--id', required=True, help='The ID of the task')
 @click.option('-d', '--destination', required=True, help='The destination where the task will be moved to')
-def move(id, destination):
-    update = Update()
-    if is_valid_option(destination):
-        update.move_task(id, destination)
-    else:
+@click.option('-oc', '--only-check', is_flag=True, help='Only move the task in check, not in Jira')
+def move(id, destination, only_check: bool):
+    if not is_valid_option(destination):
         raise click.UsageError('Option --destination can only take "todo", "active" or "done"')
 
+    issue = List.get_issue_from_task(id)
+    if not issue is None and not only_check:
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        api = Api(base_url, api_token, user_token)
+
+        # Move the issue to todo
+        if destination == 'todo':
+            todo = config.get_transition_todo()
+            transitioned = api.transition_issue(issue, todo)
+            if not transitioned:
+                raise click.UsageError('Could not transition the issue to "To Do"')
+            click.echo('Issue transitioned to "To Do"')
+
+        # Move the issue to in progress
+        elif destination == 'active':
+            in_progress = config.get_transition_in_progress()
+            transitioned = api.transition_issue(issue, in_progress)
+            if not transitioned:
+                raise click.UsageError('Could not transition the issue to "In Progress"')
+            click.echo('Issue transitioned to "In Progress"')
+
+        # Move the issue to done
+        elif destination == 'done':
+            done = config.get_transition_done()
+            moved_to_done = api.move_issue_to_done(issue, done)
+            if not moved_to_done:
+                raise click.UsageError('Could not transition the Jira issue to "Done"')
+            click.echo('Jira issue moved to done')
+
+    update = Update()
+    if destination == 'done':
+        update.end_task(id)
+    else:
+        update.move_task(id, destination)
+
 def is_valid_option(option):
-    valid_options = ['todo', 'active']
+    valid_options = ['todo', 'active', 'done']
     if option in valid_options:
         return True
     return False

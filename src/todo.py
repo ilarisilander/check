@@ -1,8 +1,8 @@
 """ Handle the todo lists """
+from pathlib import Path
 from src.settings_handler import Todo
 from src.file_handler import JsonFile
 from src.constants import TODO_PATH
-from pathlib import Path
 
 
 class List:
