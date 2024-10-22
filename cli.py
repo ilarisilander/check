@@ -330,7 +330,46 @@ def show():
     display.todo_lists()
 
 # Jira commands
-# @click.command()
+@click.command()
+@click.option('-i', '--id', required=True, help='The ID of the task')
+def assign(id: str):
+    """ Assign a Jira issue to the assignee """
+    issue = List.get_issue_from_task(id)
+    if issue is None:
+        raise click.UsageError('No Jira issue found for this task')
+    config = Jira()
+    base_url = config.get_base_url()
+    api_token = config.get_api_token()
+    user_token = config.get_user_token()
+    api = Api(base_url, api_token, user_token)
+
+    # Assign the issue to the assignee
+    assignee = config.get_assignee()
+    assigned = api.assign_issue(issue, assignee['name'])
+    if not assigned:
+        raise click.UsageError('Could not assign the issue to the assignee')
+    click.echo(f'Issue assigned to {assignee["name"]}')
+
+@click.command()
+@click.option('-i', '--id', required=True, help='The ID of the task')
+def unassign(id: str):
+    """ Unassign a Jira issue """
+    issue = List.get_issue_from_task(id)
+    if issue is None:
+        raise click.UsageError('No Jira issue found for this task')
+    config = Jira()
+    base_url = config.get_base_url()
+    api_token = config.get_api_token()
+    user_token = config.get_user_token()
+    api = Api(base_url, api_token, user_token)
+
+    # Unassign the issue
+    assignee = None
+    assigned = api.assign_issue(issue, assignee)
+    if not assigned:
+        raise click.UsageError('Could not unassign the issue')
+    click.echo('Issue unassigned')
+
 
 
 # Sub-commands for 'check'
@@ -343,12 +382,17 @@ check.add_command(move)
 check.add_command(delete)
 check.add_command(done)
 check.add_command(todo)
+check.add_command(jira)
 
 # Sub-commands for 'todo'
 todo.add_command(new)
 todo.add_command(use)
 todo.add_command(show)
 todo.add_command(remove)
+
+# Sub-commands for 'jira'
+jira.add_command(assign)
+jira.add_command(unassign)
 
 
 if __name__ == '__main__':
