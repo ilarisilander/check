@@ -207,11 +207,7 @@ def change(id: str, title: str, description: str, priority: str, size: str):
     update.change_task(id, **filtered_options)
 
 def filter_options(**kwargs) -> dict:
-    filtered_kwargs = {}
-    for key, value in kwargs.items():
-        if not value is None:
-            filtered_kwargs[key] = value
-    return filtered_kwargs
+    return {key: value for key, value in kwargs.items() if value is not None}
 
 @click.command(help='Move task to another phase (todo, active). Moving to done can only be done with the "done" command')
 @click.option('-i', '--id', required=True, help='The ID of the task')
