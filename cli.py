@@ -127,7 +127,9 @@ def add(title: str, description: str, priority: str, size: str, jira: bool, only
         create = Create(title, description, priority, size, issue)
         try:
             create.new_task()
-            click.echo('Task added to the todo list')
+            read = Read()
+            latest_id = read.get_latest_task_id()
+            click.echo(f'Task with ID: {latest_id} added to the todo list')
         except Exception as e:
             click.echo(e)
 
@@ -370,6 +372,41 @@ def unassign(id: str):
         raise click.UsageError('Could not unassign the issue')
     click.echo('Issue unassigned')
 
+@click.command()
+@click.option('-i', '--id', required=True, help='The ID of the task')
+def export(id: str):
+    """ Export a task to Jira """
+    config = Jira()
+    base_url = config.get_base_url()
+    api_token = config.get_api_token()
+    user_token = config.get_user_token()
+    project = config.get_project()
+    work_group = config.get_leading_work_group()
+    issue_type = config.get_issue_type_story()
+    api = Api(base_url, api_token, user_token)
+
+    # Get task title and description
+    read = Read()
+    title = read.get_task_title(id)
+    description = read.get_task_description(id)
+    status = read.get_task_status(id)
+    if title is None or description is None:
+        raise click.UsageError('Could not find the task to export')
+
+    # Export the issue to Jira
+    issue = api.create_issue(title, description, project, issue_type, work_group)
+    if not issue:
+        raise click.UsageError('Could not export the issue to Jira')
+
+    update = Update()
+    update.change_task(id, issue=issue)  # Add the Jira issue to the task
+    click.echo(f'Issue exported to Jira with ID: {issue}')
+
+    if status == 'active':
+        in_progress = config.get_transition_in_progress()
+        transitioned = api.transition_issue(issue, in_progress)
+        if not transitioned:
+            raise click.UsageError('Could not transition the issue to "In Progress"')
 
 
 # Sub-commands for 'check'
@@ -393,6 +430,7 @@ todo.add_command(remove)
 # Sub-commands for 'jira'
 jira.add_command(assign)
 jira.add_command(unassign)
+jira.add_command(export)
 
 
 if __name__ == '__main__':

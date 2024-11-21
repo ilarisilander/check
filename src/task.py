@@ -70,6 +70,31 @@ class Read:
         self.display = Display()
         self.active_list_path = Path(TODO_PATH) / (Todo.get_active_todo_list() + '.json')
 
+    def get_task_status(self, task_id: str) -> str:
+        todo_dict = JsonFile.read(self.active_list_path)
+        for category, tasks in todo_dict.items():
+            if category != 'id_count' and task_id in tasks.keys():
+                return category
+        return None
+
+    def get_latest_task_id(self) -> int:
+        todo_dict = JsonFile.read(self.active_list_path)
+        return todo_dict['id_count']
+
+    def get_task_title(self, task_id: str) -> str:
+        todo_dict = JsonFile.read(self.active_list_path)
+        for category, tasks in todo_dict.items():
+            if category != 'id_count' and task_id in tasks.keys():
+                return tasks[task_id]['title']
+        return None
+
+    def get_task_description(self, task_id: str) -> str:
+        todo_dict = JsonFile.read(self.active_list_path)
+        for category, tasks in todo_dict.items():
+            if category != 'id_count' and task_id in tasks.keys():
+                return tasks[task_id]['description']
+        return None
+
     def tasks(self, flag: str) -> None:
         if flag == 'all':
             self._all_tasks()
