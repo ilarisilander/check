@@ -20,8 +20,9 @@ from src.todo import List
 # Import simple_vira if it exists
 try:
     from simple_vira import Api
+    JIRA_PLUGIN = True
 except ImportError:
-    pass
+    JIRA_PLUGIN = False
 
 console = Console()
 
@@ -57,10 +58,7 @@ def todo():
 
 @click.group()
 def jira():
-    """ Handle special commands related to Jira
-
-    It's needed to add other commands to this group to make it work.
-    """
+    """ Handle special commands related to Jira """
     pass
 
 # Check commands
@@ -103,25 +101,28 @@ def add(title: str, description: str, priority: str, size: str, jira: bool, only
         raise click.UsageError('Size can only be small, medium or large')
 
     if jira or only_jira:
-        try:
-            config = Jira()
-            base_url = config.get_base_url()
-            api_token = config.get_api_token()
-            user_token = config.get_user_token()
-            project = config.get_project()
-            work_group = config.get_leading_work_group()
-            issue_type = config.get_issue_type_story()
-        except Exception as config_error:
-            click.echo(config_error)
+        if JIRA_PLUGIN:
+            try:
+                config = Jira()
+                base_url = config.get_base_url()
+                api_token = config.get_api_token()
+                user_token = config.get_user_token()
+                project = config.get_project()
+                work_group = config.get_leading_work_group()
+                issue_type = config.get_issue_type_story()
+            except Exception as config_error:
+                click.echo(config_error)
 
-        try:
-            api = Api(base_url, api_token, user_token)
-            issue = api.create_issue(title, description, project, issue_type, work_group)
-            click.echo(f'Issue added to Jira with ID: {issue}')
-            if issue == None:  # If issue was not created in Jira, then the task will not be created locally
-                raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
-        except Exception as e:
-            click.echo(e)
+            try:
+                api = Api(base_url, api_token, user_token)
+                issue = api.create_issue(title, description, project, issue_type, work_group)
+                click.echo(f'Issue added to Jira with ID: {issue}')
+                if issue == None:  # If issue was not created in Jira, then the task will not be created locally
+                    raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
+            except Exception as e:
+                click.echo(e)
+        else:
+            raise click.UsageError('Jira plugin seems to not be installed. Run without jira commands')
 
     if not only_jira:
         create = Create(title, description, priority, size, issue)
@@ -336,41 +337,47 @@ def show():
 @click.option('-i', '--id', required=True, help='The ID of the task')
 def assign(id: str):
     """ Assign a Jira issue to the assignee """
-    issue = List.get_issue_from_task(id)
-    if issue is None:
-        raise click.UsageError('No Jira issue found for this task')
-    config = Jira()
-    base_url = config.get_base_url()
-    api_token = config.get_api_token()
-    user_token = config.get_user_token()
-    api = Api(base_url, api_token, user_token)
+    if JIRA_PLUGIN:
+        issue = List.get_issue_from_task(id)
+        if issue is None:
+            raise click.UsageError('No Jira issue found for this task')
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        api = Api(base_url, api_token, user_token)
 
-    # Assign the issue to the assignee
-    assignee = config.get_assignee()
-    assigned = api.assign_issue(issue, assignee['name'])
-    if not assigned:
-        raise click.UsageError('Could not assign the issue to the assignee')
-    click.echo(f'Issue assigned to {assignee["name"]}')
+        # Assign the issue to the assignee
+        assignee = config.get_assignee()
+        assigned = api.assign_issue(issue, assignee['name'])
+        if not assigned:
+            raise click.UsageError('Could not assign the issue to the assignee')
+        click.echo(f'Issue assigned to {assignee["name"]}')
+    else:
+        click.echo('Jira plugin cannot be found')
 
 @click.command()
 @click.option('-i', '--id', required=True, help='The ID of the task')
 def unassign(id: str):
     """ Unassign a Jira issue """
-    issue = List.get_issue_from_task(id)
-    if issue is None:
-        raise click.UsageError('No Jira issue found for this task')
-    config = Jira()
-    base_url = config.get_base_url()
-    api_token = config.get_api_token()
-    user_token = config.get_user_token()
-    api = Api(base_url, api_token, user_token)
+    if JIRA_PLUGIN:
+        issue = List.get_issue_from_task(id)
+        if issue is None:
+            raise click.UsageError('No Jira issue found for this task')
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        api = Api(base_url, api_token, user_token)
 
-    # Unassign the issue
-    assignee = None
-    assigned = api.assign_issue(issue, assignee)
-    if not assigned:
-        raise click.UsageError('Could not unassign the issue')
-    click.echo('Issue unassigned')
+        # Unassign the issue
+        assignee = None
+        assigned = api.assign_issue(issue, assignee)
+        if not assigned:
+            raise click.UsageError('Could not unassign the issue')
+        click.echo('Issue unassigned')
+    else:
+        click.echo('Jira plugin cannot be found')
 
 @click.command()
 @click.option('-i', '--id', required=True, help='The ID of the task')
