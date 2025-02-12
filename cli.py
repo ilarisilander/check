@@ -6,6 +6,7 @@ Using Click for the CLI arguments and commands.
 Using Rich for the console output (the visuals).
 """
 import click
+import json
 
 from rich.console import Console
 from src.task import Create, Read, Update, Delete
@@ -415,6 +416,35 @@ def export(id: str):
         if not transitioned:
             raise click.UsageError('Could not transition the issue to "In Progress"')
 
+@click.command()
+@click.option('-i', '--issue', required=True, help='The Jira issue ID')
+def load(issue: str):
+    """ Load a Jira issue into a task """
+    if JIRA_PLUGIN:
+        config = Jira()
+        base_url = config.get_base_url()
+        api_token = config.get_api_token()
+        user_token = config.get_user_token()
+        api = Api(base_url, api_token, user_token)
+
+        issue_dict = api.get_complete_issue_data(issue)
+        if issue_dict is None:
+            raise click.UsageError('Could not load the issue from Jira')
+        title = api.get_issue_title(issue_dict)
+        description = api.get_issue_description(issue_dict)
+        create = Create(title, description, 'medium', 'medium', issue)
+
+        try:
+            create.new_task()
+            read = Read()
+            latest_id = read.get_latest_task_id()
+            click.echo(f'Task with ID: {latest_id} added to the todo list')
+        except Exception as e:
+            click.echo(e)
+    else:
+        click.echo('Jira plugin cannot be found')
+
+
 
 # Sub-commands for 'check'
 check.add_command(add)
@@ -438,6 +468,7 @@ todo.add_command(remove)
 jira.add_command(assign)
 jira.add_command(unassign)
 jira.add_command(export)
+jira.add_command(load)
 
 
 if __name__ == '__main__':
