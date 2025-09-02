@@ -111,12 +111,14 @@ def add(title: str, description: str, priority: str, size: str, jira: bool, only
                 project = config.get_project()
                 work_group = config.get_leading_work_group()
                 issue_type = config.get_issue_type_story()
+                feature_link = config.get_feature_link()
+                components = config.get_components()
             except Exception as config_error:
                 click.echo(config_error)
 
             try:
                 api = Api(base_url, api_token, user_token)
-                issue = api.create_issue(title, description, project, issue_type, work_group)
+                issue = api.create_issue(title, description, project, issue_type, work_group, feature_link, components)
                 click.echo(f'Issue added to Jira with ID: {issue}')
                 if issue == None:  # If issue was not created in Jira, then the task will not be created locally
                     raise click.UsageError('Issue could not be created in Jira. Task will not be added to the todo list')
@@ -391,6 +393,8 @@ def export(id: str):
     project = config.get_project()
     work_group = config.get_leading_work_group()
     issue_type = config.get_issue_type_story()
+    feature_link = config.get_feature_link()
+    components = config.get_components()
     api = Api(base_url, api_token, user_token)
 
     # Get task title and description
@@ -402,7 +406,7 @@ def export(id: str):
         raise click.UsageError('Could not find the task to export')
 
     # Export the issue to Jira
-    issue = api.create_issue(title, description, project, issue_type, work_group)
+    issue = api.create_issue(title, description, project, issue_type, work_group, feature_link, components)
     if not issue:
         raise click.UsageError('Could not export the issue to Jira')
 

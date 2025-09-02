@@ -37,6 +37,12 @@ class Jira:
     def get_transition_done(self) -> str:
         return self.jira_settings['transitions']['done']
 
+    def get_feature_link(self) -> str:
+        return self.jira_settings['feature_link']
+
+    def get_components(self) -> str:
+        return self.jira_settings['components']
+
 
 if __name__ == '__main__':
     pass

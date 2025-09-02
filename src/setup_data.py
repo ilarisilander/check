@@ -69,7 +69,9 @@ class Files:
                 "todo": None,
                 "in_progress": None,
                 "done": None
-            }
+            },
+            "feature_link": None,
+            "components": None
         }
 
     def ensure_appdata_dir(self):
